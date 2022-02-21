@@ -4,6 +4,7 @@
   "description": "Elevator",
   "scripts": {
     "serve": "webpack serve --config webpack.config.js",
+    "build": "webpack --config webpack.config.js",
     "lint": "yarn run eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "author": "sergei@basharov.net",

@@ -35,7 +35,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'docs')
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -48,7 +48,7 @@ module.exports = {
   devServer: {
     allowedHosts: 'all',
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, 'docs'),
     },
     compress: true,
     port: 8888,
