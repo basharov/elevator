@@ -13,6 +13,7 @@ export const ElevatorContainer = styled.div`
 `
 
 export const FloorsIndicatorsContainer = styled(ElevatorContainer)`
+  
 `
 
 export const Shaft = styled.div`

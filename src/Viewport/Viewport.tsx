@@ -1,52 +1,31 @@
-import React, { useEffect } from 'react'
-import { ControlBar, MainContainer } from './Viewport.styles'
+import React, { FC, useEffect } from 'react'
+import { MainContainer } from './Viewport.styles'
 import { useBuilding } from '@/hooks/useBuilding'
 import { Building } from '@/Components/Building/Building'
-import { useElevator } from '@/hooks/useElevator'
-import { ElevatorConfig } from '@/config/ElevatorConfig'
+import { useElevatorController } from '@/hooks/useElevatorController'
 
-const Viewport = () => {
+const Viewport: FC = () => {
   const { floorsCount } = useBuilding()
   const {
-    currentFloor, setCurrentFloor,
-    floorsPersonsCounts,
+    cabinCurrentFloor,
+    cabinPosition,
+    personsAwaiting,
     addPersonAwaitingUp,
     addPersonAwaitingDown,
-  } = useElevator()
-
-  useEffect(() => {
-    console.log('floorsPersonsCounts')
-
-    const isSomeoneWaiting = Object.keys(floorsPersonsCounts).map(floorKey => {
-      return floorsPersonsCounts[floorKey]
-    })
-
-    console.log(isSomeoneWaiting)
-
-  }, [floorsPersonsCounts, setCurrentFloor])
+    personsInCabin,
+  } = useElevatorController()
 
   return (
     <MainContainer>
-      <Building floorsCount={floorsCount} currentFloor={currentFloor} setCurrentFloor={setCurrentFloor}
-                addPersonAwaitingUp={addPersonAwaitingUp}
-                floorsPersonsCounts={floorsPersonsCounts}
-                addPersonAwaitingDown={addPersonAwaitingDown}
+      <Building
+        personsInCabin={personsInCabin}
+        cabinPosition={cabinPosition}
+        floorsCount={floorsCount}
+        cabinCurrentFloor={cabinCurrentFloor}
+        addPersonAwaitingUp={addPersonAwaitingUp}
+        addPersonAwaitingDown={addPersonAwaitingDown}
+        personsAwaiting={personsAwaiting}
       />
-      <ControlBar>
-        <button
-          disabled={currentFloor === ElevatorConfig.totalFloorsCount}
-          onClick={() => {
-            setCurrentFloor(currentFloor + 1)
-          }}>Go up
-        </button>
-        <button
-          disabled={currentFloor === 1}
-
-          onClick={() => {
-            setCurrentFloor(currentFloor - 1)
-          }}>Go down
-        </button>
-      </ControlBar>
     </MainContainer>
   )
 

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const FloorIndicatorContainer = styled.div`
+export const FloorIndicatorContainer = styled.div<{ $highlight: boolean }>`
   height: 60px;
   display: flex;
   justify-content: center;
@@ -9,5 +9,6 @@ export const FloorIndicatorContainer = styled.div`
   border-top: 0;
   box-sizing: border-box;
   font-weight: bold;
-  color: #444;
+  background-color: ${({ $highlight }) => ($highlight ? 'green' : 'transparent')};
+  color: ${({ $highlight }) => ($highlight ? '#fff' : '#444')};
 `

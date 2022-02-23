@@ -1,35 +1,30 @@
 import React, { FC } from 'react'
 
 import { ButtonDown, ButtonUp, FloorControlContainer } from './FloorControl.styles'
-import { useElevator } from '@/hooks/useElevator'
 import { ElevatorConfig } from '@/config/ElevatorConfig'
 
 interface IFloorControlProps {
-  floorNumber: any
-  currentFloor: any
-  setCurrentFloor: any
+  floorNumber: number
+  cabinCurrentFloor: number
   addPersonAwaitingUp: any
   addPersonAwaitingDown: any
 }
 
 const FloorControl: FC<IFloorControlProps> = ({
   floorNumber,
-  currentFloor,
-  setCurrentFloor,
+  cabinCurrentFloor,
   addPersonAwaitingUp,
   addPersonAwaitingDown,
 }: IFloorControlProps) => {
   return <FloorControlContainer>
     <ButtonUp
-      disabled={currentFloor === ElevatorConfig.totalFloorsCount}
+      disabled={cabinCurrentFloor === ElevatorConfig.totalFloorsCount}
       onClick={() => {
-        // setCurrentFloor(currentFloor + 1)
-        addPersonAwaitingUp(floorNumber)
+        addPersonAwaitingUp(floorNumber - 1)
       }}>Up</ButtonUp>
     <ButtonDown
       onClick={() => {
-        // setCurrentFloor(currentFloor - 1)
-        addPersonAwaitingDown(floorNumber)
+        addPersonAwaitingDown(floorNumber - 1)
       }}>Down</ButtonDown>
   </FloorControlContainer>
 }

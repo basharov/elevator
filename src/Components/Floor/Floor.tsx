@@ -4,34 +4,32 @@ import { FloorContainer } from './Floor.styles'
 import { FloorControl } from '@/Components/FloorControl/FloorControl'
 import { Person } from '@/Components/Person/Person'
 import { PersonsRow } from '../Person/Person.styles'
+import { IPerson } from '@/types/IPerson'
 
 interface IFloorProps {
   floorNumber: number
-  currentFloor: any
-  setCurrentFloor: any
+  cabinCurrentFloor: number
   addPersonAwaitingUp: any
-  floorsPersonsCounts: any
   addPersonAwaitingDown: any
+  personsAwaiting: IPerson[]
 }
 
 const Floor: FC<IFloorProps> = ({
   floorNumber,
-  currentFloor,
-  setCurrentFloor,
+  cabinCurrentFloor,
   addPersonAwaitingUp,
-  floorsPersonsCounts,
+  personsAwaiting,
   addPersonAwaitingDown,
 }: IFloorProps) => {
 
   return <FloorContainer>
     <PersonsRow>
-      {(floorsPersonsCounts[floorNumber] || []).map((key: any, index: number) =>
-        <Person key={`${index}-${floorNumber}`} direction={key > floorNumber ? 'up' : 'down'} toFloor={key}/>)}
+      {personsAwaiting.map((person, index: number) =>
+        <Person key={`${index}-${floorNumber}`} direction={person.direction} />)}
     </PersonsRow>
     <FloorControl
       floorNumber={floorNumber}
-      currentFloor={currentFloor}
-      setCurrentFloor={setCurrentFloor}
+      cabinCurrentFloor={cabinCurrentFloor}
       addPersonAwaitingUp={addPersonAwaitingUp}
       addPersonAwaitingDown={addPersonAwaitingDown}
     />

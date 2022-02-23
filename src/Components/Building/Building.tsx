@@ -1,38 +1,49 @@
-import React from 'react'
+import React, { FC } from 'react'
 
 import { BuildingContainer } from './Building.styles'
 import { Floor } from '@/Components/Floor/Floor'
 import { Elevator } from '@/Components/Elevator/Elevator'
+import { IPerson } from '@/types/IPerson'
 
 interface IBuildingProps {
   floorsCount: number
-  currentFloor: number
-  setCurrentFloor: any
+  cabinCurrentFloor: number
+  cabinPosition: number
   addPersonAwaitingUp: any
   addPersonAwaitingDown: any
-  floorsPersonsCounts: any
+  personsAwaiting: IPerson[]
+  personsInCabin: IPerson[]
 }
 
-const Building = ({
+const Building: FC<IBuildingProps> = ({
   floorsCount,
-  currentFloor,
-  setCurrentFloor,
+  cabinCurrentFloor,
+  cabinPosition,
   addPersonAwaitingUp,
-  floorsPersonsCounts,
+  personsAwaiting,
+  personsInCabin,
   addPersonAwaitingDown,
 }: IBuildingProps) =>
   (<BuildingContainer>
-    {Array.from(Array(floorsCount).keys()).reverse().map((floorNumber) => (
-      <Floor
-        key={floorNumber}
-        floorNumber={floorNumber + 1}
-        currentFloor={currentFloor}
-        setCurrentFloor={setCurrentFloor}
-        addPersonAwaitingUp={addPersonAwaitingUp}
-        floorsPersonsCounts={floorsPersonsCounts}
-        addPersonAwaitingDown={addPersonAwaitingDown}
-      />))}
-    <Elevator currentFloor={currentFloor} floorsCount={floorsCount} />
+    {Array.from(Array(floorsCount).keys()).reverse().map((floorNumber) => {
+
+      const personsAwaitingOnTheFloor = personsAwaiting.filter(person => person.currentFloor === floorNumber)
+
+      return (
+        <Floor
+          key={floorNumber}
+          floorNumber={floorNumber + 1}
+          cabinCurrentFloor={cabinCurrentFloor}
+          addPersonAwaitingUp={addPersonAwaitingUp}
+          addPersonAwaitingDown={addPersonAwaitingDown}
+          personsAwaiting={personsAwaitingOnTheFloor}
+        />)
+    })}
+    <Elevator
+      cabinCurrentFloor={cabinCurrentFloor}
+      floorsCount={floorsCount}
+      cabinPosition={cabinPosition}
+      personsInCabin={personsInCabin} />
   </BuildingContainer>)
 
 export { Building }

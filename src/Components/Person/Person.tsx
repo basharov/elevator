@@ -4,12 +4,11 @@ import { Down, PersonContainer, Up } from './Person.styles'
 
 interface IPersonProps {
   direction: 'up' | 'down'
-  toFloor: number
 }
 
-const Person: FC<IPersonProps> = ({ direction, toFloor }: IPersonProps) => {
+const Person: FC<IPersonProps> = ({ direction }: IPersonProps) => {
   return <PersonContainer>
-    {direction === 'up' ? <Up>{toFloor}</Up> : <Down>{toFloor}</Down>}
+    {direction === 'up' ? <Up /> : <Down />}
   </PersonContainer>
 }
 

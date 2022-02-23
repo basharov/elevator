@@ -3,9 +3,9 @@ import { ElevatorConfig } from '@/config/ElevatorConfig'
 
 export const PersonsRow = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   width: calc(50% - ${ElevatorConfig.cabinWidth / 2}px - 4px);
-  justify-content: flex-end;
+  justify-content: flex-start;
 `
 
 export const PersonContainer = styled.div`
@@ -18,9 +18,9 @@ export const PersonContainer = styled.div`
 `
 
 const BasicPerson = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
   font-size: 12px;
   color: #fff;
   display: flex;

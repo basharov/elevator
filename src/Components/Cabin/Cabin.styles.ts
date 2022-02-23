@@ -13,6 +13,6 @@ export const CabinContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.5s ease-out;
+  //transition: transform 0.5s ease-out;
   z-index: 200;
 `
