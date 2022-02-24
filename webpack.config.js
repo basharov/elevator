@@ -2,16 +2,15 @@ const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
-const styledComponentsTransformer = createStyledComponentsTransformer();
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default;
 
 dotenv.config()
 
 module.exports = {
   mode: 'none',
   entry: {
-    app: path.join(__dirname, 'src', 'index.tsx')
+    app: path.join(__dirname, 'src', 'app.ts')
   },
   target: 'web',
   resolve: {
@@ -27,28 +26,37 @@ module.exports = {
         test: /\.tsx?$/,
         exclude: '/node_modules/',
         loader: 'ts-loader',
-        options: {
-          getCustomTransformers: () => ({before: [styledComponentsTransformer]})
-        }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader"
+        ]
       }
     ],
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'docs')
+    path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(process.env)
     }),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "[id].css"
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
-    })
+    }),
+    new HTMLInlineCSSWebpackPlugin(),
   ],
   devServer: {
     allowedHosts: 'all',
     static: {
-      directory: path.join(__dirname, 'docs'),
+      directory: path.join(__dirname, 'dist'),
     },
     compress: true,
     port: 8888,

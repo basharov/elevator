@@ -7,7 +7,23 @@
     <title>Elevator</title>
 </head>
 <body>
-<!-- React app root element -->
-<div id="root"></div>
+<div id="root">
+    <div id="dataPanel">
+        <div class="personsAwaiting"></div>
+        <div class="cabinValue"></div>
+    </div>
+
+    <div class="buildingContainer">
+        <div id="building">
+            <div class="fade"></div>
+        </div>
+        <div id="floorButtons"></div>
+    </div>
+    <div id="controlPanel">
+        <div class="controlPanelButton generateRandomPersons">Generate random persons</div>
+        <div class="controlPanelButton loadCabin">Load cabin</div>
+        <div class="controlPanelButton processQueue">Start</div>
+    </div>
+</div>
 </body>
 </html>
