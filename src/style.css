@@ -6,12 +6,7 @@ html, body {
 }
 
 .buildingContainer {
-    position: absolute;
     display: flex;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
     justify-content: center;
 }
 
@@ -19,7 +14,7 @@ html, body {
     display: flex;
     flex-direction: column-reverse;
     width: 600px;
-    padding-bottom: 10px;
+    padding: 50px 0;
     position: relative;
 }
 
@@ -34,7 +29,7 @@ html, body {
 }
 
 .floorIndicator {
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
     font-weight: bold;
     width: 60px;
@@ -42,12 +37,18 @@ html, body {
     align-items: center;
     justify-content: center;
     display: flex;
+    transition: background-color 0.1s;
+}
+
+.floorIndicator.activeDestination {
+    background-color: #69a814;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 #floorButtons {
     display: flex;
     flex-direction: column-reverse;
-    padding-bottom: 10px;
+    padding: 50px 0;
 }
 
 .floorControl {
@@ -59,6 +60,7 @@ html, body {
 
 .moveUpButton,
 .moveDownButton {
+    user-select: none;
     cursor: pointer;
     width: 40px;
     height: 40px;
@@ -74,15 +76,24 @@ html, body {
     font-size: 12px;
     font-weight: bold;
     margin: 10px;
+    border-radius: 4px;
 }
 
 .moveUpButton {
     margin-right: 0;
+    background: green;
 }
 
-.moveUpButton:hover,
-.moveDownButton:hover {
+.moveDownButton {
+    background: red;
+}
+
+.moveUpButton:hover {
     background-color: #649425;
+}
+
+.moveDownButton:hover {
+    background-color: #94252e;
 }
 
 #cabin {
@@ -96,11 +107,12 @@ html, body {
     justify-content: center;
     color: #fff;
     position: absolute;
+    transition: transform 0.1s;
 }
 
 #dataPanel {
     background: #a1a1a1;
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
@@ -109,11 +121,13 @@ html, body {
 
 #controlPanel {
     background: #a1a1a1;
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
     bottom: 0;
     width: 250px;
+    display: flex;
+    flex-direction: column;
 }
 
 .controlPanelButton {
@@ -127,6 +141,20 @@ html, body {
 
 .controlPanelButton:hover {
     background: #4b3b3b;
+}
+
+.checkboxRow {
+    padding: 10px;
+    margin: 10px;
+}
+
+input[type=checkbox] {
+    cursor: pointer;
+}
+
+input[type=number] {
+    padding: 10px;
+    margin: 10px;
 }
 
 .floorRow {
@@ -143,7 +171,7 @@ html, body {
 }
 
 .fade {
-    background: linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255, 1));
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
     width: 60px;
     position: absolute;
     left: 0;

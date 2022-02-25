@@ -1,48 +1,56 @@
-import { sleep } from '../utils/sleep'
-import { CabinDirection, IElevatorControllerConfig } from './types'
+import { CabinDirection, IElevatorConfig, IElevatorMachineEventListeners } from './types'
+import { initElevatorMachineDataStorage } from '@/services/DataStorage'
+import { sleep } from '@/utils/sleep'
 
-const initElevatorMachine = async (config: IElevatorControllerConfig) => {
-  const dataLayer: any = {
-    currentFloor: config.startFloor,
-    currentDirection: CabinDirection.None,
-    stop: false,
+const initElevatorMachine = async (config: IElevatorConfig) => {
+  const machineStorage = initElevatorMachineDataStorage(config)
+  const eventListeners: IElevatorMachineEventListeners = {}
+
+  const onBeforeFloor = (cb: any) => {
+    eventListeners.onBeforeFloor = cb
   }
 
-  const eventListeners: any = {}
-
-  console.log('Elevator Machine is initializing...')
-  await sleep(200)
-  console.log('Elevator Machine is ready!')
-
-  const on = (eventType: string, cb: (...args: any) => void) => {
-    eventListeners[eventType] = cb
+  const onDoorsOpened = (cb: any) => {
+    eventListeners.onDoorsOpened = cb
   }
 
-  const setFloor = (floorNumber: number) => {
-    dataLayer.currentFloor = floorNumber
+  const onFloorButtonPressed = (cb: any) => {
+    eventListeners.onFloorButtonPressed = cb
+  }
+
+  const onServedAll = (cb: any) => {
+    eventListeners.onServedAll = cb
   }
 
   const move = async (direction: CabinDirection) => {
-    if (!dataLayer.stop) {
-      eventListeners['beforeFloor'](dataLayer.currentFloor + 1 * direction)
-      dataLayer.currentFloor += 1 * direction
+    if (!machineStorage.stop) {
+      eventListeners.onBeforeFloor && eventListeners.onBeforeFloor(machineStorage.currentFloor + 1 * direction)
+      machineStorage.currentFloor += 1 * direction
       console.log(`Floor: ${getCurrentFloor()}`)
-      dataLayer.moveTimeout = setTimeout(() => {
+      machineStorage.moveTimeout = setTimeout(() => {
         move(direction)
       }, 30)
     } else {
-      clearTimeout(dataLayer.moveTimeout)
-      dataLayer.stop = false
+      clearTimeout(machineStorage.moveTimeout as number)
+      machineStorage.stop = false
     }
   }
 
   const startMovingInDirection = async (direction: CabinDirection) => {
-    // console.log(`Action: ${direction === CabinDirection.Up ? 'moveUp' : 'moveDown'}`)
     await sleep(100)
     console.log('Closing doors...')
-    eventListeners['doorsClosed']()
-    console.log('Starting moving...')
-    dataLayer.currentDirection = direction
+    eventListeners.onDoorsClosed && eventListeners.onDoorsClosed()
+    console.log('Start moving...')
+    machineStorage.currentDirection = direction
+
+    if (machineStorage.currentDirection === CabinDirection.Up && getCurrentFloor() >= config.floorsCount - 1) {
+      return move(CabinDirection.Down)
+    }
+
+    if (machineStorage.currentDirection === CabinDirection.Down && getCurrentFloor() <= 0) {
+      return move(CabinDirection.Up)
+    }
+
     return move(direction)
   }
 
@@ -50,50 +58,42 @@ const initElevatorMachine = async (config: IElevatorControllerConfig) => {
   const moveDown = async () => startMovingInDirection(CabinDirection.Down)
 
   const getCurrentFloor = (): number => {
-    return dataLayer.currentFloor
-  }
-
-  const resetCurrentFloor = () => {
-    dataLayer.currentFloor = config.startFloor
+    return machineStorage.currentFloor
   }
 
   const getCurrentDirection = (): CabinDirection => {
     console.log('Action: getCurrentDirection')
-    return dataLayer.currentDirection
+    return machineStorage.currentDirection
   }
 
   const stopAndOpenDoors = async () => {
     console.log('Stopping...')
-    dataLayer.stop = true
+    machineStorage.stop = true
     await sleep(100)
     console.log('Stopped')
     console.log('Opening doors...')
     await sleep(100)
     console.log('Doors opened')
-    dataLayer.currentDirection = CabinDirection.None
-    eventListeners['doorsOpened']()
+    machineStorage.currentDirection = CabinDirection.None
+    eventListeners.onDoorsOpened && eventListeners.onDoorsOpened()
   }
 
-  const pressFloorButton = (floorNumber: number, direction: 'up' | 'down') => {
+  const pressFloorButton = (floorNumber: number, direction: CabinDirection) => {
     console.log(`Action: pressFloorButton ${floorNumber} going ${direction}`)
-    eventListeners['floorButtonPressed'](floorNumber, direction)
-  }
-
-  const start = () => {
-    console.log(`Action: start`)
+    eventListeners.onFloorButtonPressed && eventListeners.onFloorButtonPressed(floorNumber, direction)
   }
 
   return {
-    on,
+    onBeforeFloor,
+    onDoorsOpened,
+    onFloorButtonPressed,
+    onServedAll,
     moveUp,
     moveDown,
     stopAndOpenDoors,
     getCurrentFloor,
-    resetCurrentFloor,
     getCurrentDirection,
     pressFloorButton,
-    start,
-    setFloor,
   }
 }
 
