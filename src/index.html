@@ -2,15 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewpodatart" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Elevator</title>
 </head>
 <body>
 <div id="root">
     <div id="dataPanel">
-        <div class="personsAwaiting"></div>
-        <div class="cabinValue"></div>
+        <div class="personsAwaiting">
+            <div class="dataRow">Awaiting: 0</div>
+        </div>
+        <div class="cabinValue">
+            <div class="dataRow">In cabin: 0</div>
+        </div>
+        <div class="actionsList">
+            <div class="searching">Searching for the floor</div>
+            <div class="unloading">Unloading...</div>
+            <div class="loading">Loading...</div>
+            <div class="selectingDirection">Selecting direction...</div>
+            <div class="moving">Moving...</div>
+            <div class="detectingFloor">Detecting floor...</div>
+            <div class="stopping">Stopping...</div>
+            <div class="opening">Opening Doors...</div>
+        </div>
     </div>
 
     <div class="buildingContainer">
@@ -22,10 +36,12 @@
     <div id="controlPanel">
         <input type="number" id="personsToGenerate" value="1000">
         <div class="controlPanelButton generateRandomPersons">Generate random persons</div>
-        <div class="controlPanelButton loadCabin">Load cabin</div>
         <div class="controlPanelButton processQueue">Start</div>
-        <div class="checkboxRow"><input type="checkbox" id="autostartCheckbox"> <label for="autostartCheckbox">Autostart</label></div>
         <div class="controlPanelButton randomFloorPress">Random Floor Buttons</div>
+        <div class="speedControlRow">
+            Speed
+            <input class="speedControl" type="range" min="1" max="10" value="5">
+        </div>
     </div>
 </div>
 </body>

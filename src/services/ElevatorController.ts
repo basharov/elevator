@@ -2,6 +2,7 @@ import { initElevatorMachine } from './ElevatorMachine'
 import { initElevatorControllerDataStorage } from './DataStorage'
 import { CabinDirection, IElevatorConfig, IElevatorControllerEventListeners, IPerson } from './types'
 import { orderBy, partition, random, sample } from 'lodash'
+import { sleep } from '@/utils/sleep'
 
 const initElevatorController = async (config: IElevatorConfig) => {
   const storage = initElevatorControllerDataStorage()
@@ -11,6 +12,10 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
   const onServedAll = (cb: any) => {
     eventListeners.onServedAll = cb
+  }
+
+  const onLoggableEvent = (cb: any) => {
+    eventListeners.onLoggableEvent = cb
   }
 
   const onBeforeFloor = (cb: any) => {
@@ -34,6 +39,7 @@ const initElevatorController = async (config: IElevatorConfig) => {
   }
 
   const getNextDirection = (): CabinDirection => {
+    eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('searching')
     if (storage.personsInCabin.length === 0 && storage.personsAwaiting.length === 0) {
       eventListeners.onServedAll && eventListeners.onServedAll()
       return CabinDirection.None
@@ -66,13 +72,15 @@ const initElevatorController = async (config: IElevatorConfig) => {
     return distanceToAboveFloor <= distanceToBelowFloor ? CabinDirection.Up : CabinDirection.Down
   }
 
-  const unloadCabin = () => {
+  const unloadCabin = async () => {
     if (storage.personsInCabin.length === 0) {
       console.log('Cabin is empty, skipping unload step....')
       return
     }
 
     console.log('Unloading passengers...')
+    eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('unloading')
+    await sleep(100 / config.speed)
     const personsInCabinBeforeUnloading = storage.personsInCabin
     storage.personsInCabin = storage.personsInCabin.filter((person) => {
       return person.destinationFloor !== elevatorMachine.getCurrentFloor()
@@ -82,6 +90,7 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
   const loadCabin = async (): Promise<CabinDirection> => {
     console.log('Loading cabin with passengers...')
+    eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('loading')
     let nextDirection: CabinDirection
 
     // If there is somebody in the cabin, keep going in the same direction
@@ -94,13 +103,14 @@ const initElevatorController = async (config: IElevatorConfig) => {
     } else {
       const personsToLoad = getCabinFloorPersonsAwaiting()
       const directions = partition(personsToLoad, (person => person.direction === CabinDirection.Up))
-      storage.personsInCabin = directions[0].length >= directions[1].length ? directions[0] : directions[1]
+      const personsEnteringCabin = directions[0].length >= directions[1].length ? directions[0] : directions[1]
+      storage.personsInCabin = personsEnteringCabin
       nextDirection = getNextDirection()
     }
 
     const cabinFloor = elevatorMachine.getCurrentFloor()
-
     storage.personsAwaiting = storage.personsAwaiting.filter(person => !(person.startFloor === cabinFloor && person.direction === nextDirection))
+    // storage.personsAwaiting = xor(storage.personsInCabin, storage.personsAwaiting)
 
     console.log(`${storage.personsInCabin.length} passengers are in the cabin!`)
     console.log(`${storage.personsAwaiting.length} persons left to serve...`)
@@ -114,11 +124,14 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
   const processQueue = async () => {
     await unloadCabin()
+
     const nextDirection = await loadCabin()
 
     if (nextDirection === CabinDirection.Up) {
+      eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('moving')
       elevatorMachine.moveUp()
     } else if (nextDirection === CabinDirection.Down) {
+      eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('moving')
       elevatorMachine.moveDown()
     }
   }
@@ -133,19 +146,22 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
   elevatorMachine.onBeforeFloor && elevatorMachine.onBeforeFloor((floorNumber: number) => {
     console.log(`Floor: ${elevatorMachine.getCurrentFloor()} - ${floorNumber}`)
-
+    eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('detectingFloor')
     const personsArriving = storage.personsInCabin.filter((person) => person.destinationFloor === floorNumber)
 
     if (personsArriving.length > 0) {
       console.log(`${personsArriving.length} persons arriving at the current floor...`)
+      eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('stopping')
       elevatorMachine.stopAndOpenDoors()
     } else if (personsAwaitingOnTheFloor(floorNumber).length > 0) {
       console.log(`Somebody is waiting on the floor ${floorNumber}, let's get them!`)
+      eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('stopping')
       elevatorMachine.stopAndOpenDoors()
     }
 
     if (floorNumber >= config.floorsCount - 1 || floorNumber < 0) {
       console.log('Will stop the cabin because the top/ground floor is reached')
+      eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('stopping')
       elevatorMachine.stopAndOpenDoors()
     }
     eventListeners.onBeforeFloor && eventListeners.onBeforeFloor(floorNumber)
@@ -154,9 +170,6 @@ const initElevatorController = async (config: IElevatorConfig) => {
   elevatorMachine.onFloorButtonPressed && elevatorMachine.onFloorButtonPressed((currentFloor: number, direction: CabinDirection) => {
     console.log('Event: floorButtonPressed')
     addPersonToAwaitingList({ startFloor: currentFloor, direction })
-    if (storage.autostart) {
-      processQueue()
-    }
   })
 
   const addRandomPersonsToAwaitingList = (count = 1000) => {
@@ -174,16 +187,7 @@ const initElevatorController = async (config: IElevatorConfig) => {
     }
     console.log(`Generated ${count} persons awaiting.`)
 
-    if (storage.autostart) {
-      processQueue()
-    }
-
     return storage.personsAwaiting
-  }
-
-  const setAutoStart = async (value: boolean) => {
-    storage.autostart = value
-    processQueue()
   }
 
   const pressCabinButton = (floorNumber: number) => {
@@ -200,8 +204,8 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
     onServedAll,
     onBeforeFloor,
+    onLoggableEvent,
 
-    setAutoStart,
     pressCabinButton,
     loadCabin,
     unloadCabin,

@@ -50,6 +50,7 @@ const createCabin = () => {
 const updateDestinationFloors = () => {
   const floorIndicators = document.querySelectorAll<HTMLDivElement>('.floorIndicator')
   const personsInCabin: IPerson[] = window.elevatorController.getPersonsInCabin()
+
   const destinationFloors = personsInCabin.reduce((accum: number[], person: IPerson) => {
     if (accum.indexOf(person.destinationFloor!) < 0) {
       accum.push(person.destinationFloor!)
@@ -94,17 +95,18 @@ const populateCabin = () => {
 
 const populateDataPanel = () => {
   const personsAwaiting = window.elevatorController.getPersonsAwaiting()
+  const personsInCabin = window.elevatorController.getPersonsInCabin()
   const personsAwaitingElement = document.querySelector<HTMLDivElement>('#dataPanel .personsAwaiting')
-  personsAwaitingElement!.innerText = String(personsAwaiting.length)
+  personsAwaitingElement!.innerHTML = `<div class="dataRow">Awaiting: ${personsAwaiting.length}</div>
+<div class="dataRow">In cabin: ${personsInCabin.length}</div>`
 }
 
 const createControlPanel = () => {
   console.log('createControlPanel')
   const generatePersonsAwaitingButton = document.querySelector('.generateRandomPersons')
-  const loadCabinButton = document.querySelector('.loadCabin')
   const processQueueButton = document.querySelector('.processQueue')
   const randomFloorPressButton = document.querySelector('.randomFloorPress')
-  const autostartCheckbox = document.querySelector('#autostartCheckbox')
+  const speedControl = document.querySelector('.speedControl')
 
   generatePersonsAwaitingButton?.addEventListener('click', () => {
     const personsToGenerateInput = document.querySelector<HTMLInputElement>('#personsToGenerate')
@@ -112,15 +114,12 @@ const createControlPanel = () => {
     populatePersonsAwaiting(personsWaiting)
   })
 
-  loadCabinButton?.addEventListener('click', async () => {
-    await window.elevatorController.loadCabin()
-    const personsWaiting = window.elevatorController.getPersonsAwaiting()
-    populatePersonsAwaiting(personsWaiting)
-    populateCabin()
-  })
-
   processQueueButton?.addEventListener('click', async () => {
     await window.elevatorController.processQueue()
+  })
+
+  speedControl?.addEventListener('change', async (event: any) => {
+    window.config.speed = Number(event.currentTarget?.value)
   })
 
 
@@ -130,21 +129,21 @@ const createControlPanel = () => {
     return { startFloor, direction }
   }
 
+  randomFloorPressButton?.addEventListener('dblclick', async () => {
+    return
+  })
+
   randomFloorPressButton?.addEventListener('click', async () => {
     setInterval(() => {
+        window.elevatorController.addRandomPersonsToAwaitingList(2)
         const { startFloor, direction } = generateRandomFloorButton()
         window.elevatorController.pressFloorButton(startFloor, direction)
         const personsAwaiting = window.elevatorController.getPersonsAwaiting()
         populatePersonsAwaiting(personsAwaiting)
         populateCabin()
       },
-      random(1000, 1500),
+      random(0, 300),
     )
-  })
-
-  autostartCheckbox?.addEventListener('change', (event) => {
-    const isAutostart = (event?.currentTarget as HTMLInputElement)?.checked
-    window.elevatorController.setAutoStart(isAutostart)
   })
 }
 
@@ -181,6 +180,15 @@ const bindControllerEvents = () => {
     console.log('No people to serve. Should stop and wait.')
     updateDestinationFloors()
     populateCabin()
+  })
+  window.elevatorController.onLoggableEvent && window.elevatorController.onLoggableEvent((eventLabel: any) => {
+    document.querySelectorAll('.actionsList > div').forEach((el) => {
+      if (el.classList.contains(eventLabel)) {
+        el.classList.add('active')
+      } else {
+        el.classList.remove('active')
+      }
+    })
   })
 }
 

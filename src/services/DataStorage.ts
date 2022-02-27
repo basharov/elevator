@@ -4,7 +4,6 @@ export const initElevatorControllerDataStorage = (): IElevatorControllerDataStor
   {
     personsAwaiting: [],
     personsInCabin: [],
-    autostart: false,
   }
 )
   export const initElevatorMachineDataStorage = (config: IElevatorConfig): IElevatorMachineDataStorage => ({

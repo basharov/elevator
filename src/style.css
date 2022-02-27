@@ -117,6 +117,13 @@ html, body {
     top: 0;
     bottom: 0;
     width: 250px;
+    padding: 40px 10px 10px 10px;
+}
+
+#dataPanel .dataRow {
+    color: #fff;
+    font-weight: bold;
+    padding: 0 10px 10px 10px;
 }
 
 #controlPanel {
@@ -171,19 +178,19 @@ input[type=number] {
 }
 
 .fade {
-    background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
-    width: 60px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), #eee);
+    width: 120px;
     position: absolute;
     left: 0;
-    top: 0;
+    top: 50px;
     z-index: 200;
-    bottom: 10px;
+    bottom: 50px;
 }
 
 .person {
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
     margin: 0 4px;
     flex-shrink: 0;
 }
@@ -194,4 +201,29 @@ input[type=number] {
 
 .person.down {
     background-color: red;
+}
+
+.actionsList {
+    padding: 10px;
+}
+
+.actionsList > div {
+    background-color: dimgrey;
+    color: #aaa;
+    padding: 10px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.actionsList > .active {
+    background-color: darkolivegreen;
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.speedControlRow {
+    padding: 10px;
+    font-weight: bold;
+    color: #3b3b3b;
 }

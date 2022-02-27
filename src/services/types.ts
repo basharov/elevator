@@ -8,6 +8,7 @@ export interface IElevatorConfig {
   floorsCount: number
   startFloor: number
   cabinCapacity: number
+  speed: number
 }
 
 export interface IPerson {
@@ -20,7 +21,6 @@ export interface IPerson {
 export interface IElevatorControllerDataStorage {
   personsAwaiting: IPerson[]
   personsInCabin: IPerson[]
-  autostart: boolean
 }
 
 export interface IElevatorMachineDataStorage {
@@ -45,10 +45,10 @@ export interface IElevatorControllerFunctions {
   loadCabin: () => Promise<CabinDirection>
   processQueue: () => void
   pressFloorButton: (floorNumber: number, direction: CabinDirection) => void
-  setAutoStart: (value: boolean) => void
 }
 
 export interface IElevatorControllerEventListeners {
   onServedAll?: (...args: any[]) => void
   onBeforeFloor?: (...args: any[]) => void
+  onLoggableEvent?: (...args: any[]) => void
 }
