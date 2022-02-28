@@ -20,3 +20,8 @@ Process, when the floors are not empty and the elevator is started:
 6. Unload passengers with the destination floor equal to the current cabin floor.
 7. Load passengers going in the same direction as those that are already in the cabin.
 8. Detect floor to stop by comparing destination floor of the passengers in the cabin to the floor coming.
+
+
+To improve:
+1. UI visualization of the actions in progress (left column of the UI)
+2. Implement cabin capacity logic limiting amount of passengers that could be transported at once.

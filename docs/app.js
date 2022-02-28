@@ -23,7 +23,7 @@ const ElevatorConfig = {
     floorsCount: 16,
     startFloor: 8,
     cabinCapacity: 15,
-    speed: 20,
+    speed: 10,
 };
 const DirectionsLabels = {
     '-1': 'down',
