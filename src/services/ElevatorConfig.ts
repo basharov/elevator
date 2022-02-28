@@ -4,7 +4,7 @@ export const ElevatorConfig: IElevatorConfig = {
   floorsCount: 16,
   startFloor: 8,
   cabinCapacity: 15,
-  speed: 5,
+  speed: 20,
 }
 
 

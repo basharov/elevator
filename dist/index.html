@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpodatart" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Elevator</title>
+<script defer src="app.js"></script><style type="text/css">html, body {
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #fefefe;
+}
+
+.buildingContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#building {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 600px;
+    padding: 50px 0;
+    position: relative;
+}
+
+.floor {
+    background: #eee;
+    height: 60px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.floorIndicator {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-weight: bold;
+    width: 60px;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    transition: background-color 0.1s;
+}
+
+.floorIndicator.activeDestination {
+    background-color: #69a814;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#floorButtons {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 50px 0;
+}
+
+.floorControl {
+    background: #e0e0e0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.moveUpButton,
+.moveDownButton {
+    user-select: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background-color: green;
+    color: #fff;
+    border-bottom: 0;
+    border-right: 0;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 10px;
+    border-radius: 4px;
+}
+
+.moveUpButton {
+    margin-right: 0;
+    background: green;
+}
+
+.moveDownButton {
+    background: red;
+}
+
+.moveUpButton:hover {
+    background-color: #649425;
+}
+
+.moveDownButton:hover {
+    background-color: #94252e;
+}
+
+#cabin {
+    width: 50px;
+    height: 50px;
+    background: #d58b00;
+    align-self: center;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    position: absolute;
+    transition: transform 0.1s;
+}
+
+#dataPanel {
+    background: #a1a1a1;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 250px;
+    padding: 40px 10px 10px 10px;
+}
+
+#dataPanel .dataRow {
+    color: #fff;
+    font-weight: bold;
+    padding: 0 10px 10px 10px;
+}
+
+#controlPanel {
+    background: #a1a1a1;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.controlPanelButton {
+    background: #3b3b3b;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.controlPanelButton:hover {
+    background: #4b3b3b;
+}
+
+.checkboxRow {
+    padding: 10px;
+    margin: 10px;
+}
+
+input[type=checkbox] {
+    cursor: pointer;
+}
+
+input[type=number] {
+    padding: 10px;
+    margin: 10px;
+}
+
+.floorRow {
+    width: 270px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+}
+
+.fade {
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), #eee);
+    width: 120px;
+    position: absolute;
+    left: 0;
+    top: 50px;
+    z-index: 200;
+    bottom: 50px;
+}
+
+.person {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+.person.up {
+    background-color: green;
+}
+
+.person.down {
+    background-color: red;
+}
+
+.actionsList {
+    padding: 10px;
+}
+
+.actionsList > div {
+    background-color: dimgrey;
+    color: #aaa;
+    padding: 10px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.actionsList > .active {
+    background-color: darkolivegreen;
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.speedControlRow {
+    padding: 10px;
+    font-weight: bold;
+    color: #3b3b3b;
+}
+
+/*# sourceMappingURL=app.css.map*/</style></head>
+<body>
+<div id="root">
+    <div id="dataPanel">
+        <div class="personsAwaiting">
+            <div class="dataRow">Awaiting: 0</div>
+        </div>
+        <div class="cabinValue">
+            <div class="dataRow">In cabin: 0</div>
+        </div>
+        <div class="actionsList">
+            <div class="searching">Searching for the floor</div>
+            <div class="unloading">Unloading...</div>
+            <div class="loading">Loading...</div>
+            <div class="selectingDirection">Selecting direction...</div>
+            <div class="moving">Moving...</div>
+            <div class="detectingFloor">Detecting floor...</div>
+            <div class="stopping">Stopping...</div>
+            <div class="opening">Opening Doors...</div>
+        </div>
+    </div>
+
+    <div class="buildingContainer">
+        <div id="building">
+            <div class="fade"></div>
+        </div>
+        <div id="floorButtons"></div>
+    </div>
+    <div id="controlPanel">
+        <input type="number" id="personsToGenerate" value="1000">
+        <div class="controlPanelButton generateRandomPersons">Generate random persons</div>
+        <div class="controlPanelButton processQueue">Start</div>
+        <div class="controlPanelButton randomFloorPress">Random Floor Buttons</div>
+        <div class="speedControlRow">
+            Speed
+            <input class="speedControl" type="range" min="1" max="100" value="20">
+        </div>
+    </div>
+</div>
+</body>
+</html>

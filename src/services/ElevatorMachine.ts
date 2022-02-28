@@ -38,7 +38,7 @@ const initElevatorMachine = async (config: IElevatorConfig) => {
   }
 
   const startMovingInDirection = async (direction: CabinDirection) => {
-    await sleep(100/config.speed)
+    await sleep(1000/config.speed)
     console.log('Closing doors...')
     eventListeners.onDoorsClosed && eventListeners.onDoorsClosed()
     console.log('Start moving...')
@@ -70,10 +70,10 @@ const initElevatorMachine = async (config: IElevatorConfig) => {
   const stopAndOpenDoors = async () => {
     console.log('Stopping...')
     machineStorage.stop = true
-    await sleep(100/config.speed)
+    await sleep(1000/config.speed)
     console.log('Stopped')
     console.log('Opening doors...')
-    await sleep(100/config.speed)
+    await sleep(1000/config.speed)
     console.log('Doors opened')
     machineStorage.currentDirection = CabinDirection.None
     eventListeners.onDoorsOpened && eventListeners.onDoorsOpened()

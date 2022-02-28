@@ -97,8 +97,9 @@ const populateDataPanel = () => {
   const personsAwaiting = window.elevatorController.getPersonsAwaiting()
   const personsInCabin = window.elevatorController.getPersonsInCabin()
   const personsAwaitingElement = document.querySelector<HTMLDivElement>('#dataPanel .personsAwaiting')
-  personsAwaitingElement!.innerHTML = `<div class="dataRow">Awaiting: ${personsAwaiting.length}</div>
-<div class="dataRow">In cabin: ${personsInCabin.length}</div>`
+  const personsInCabinElement = document.querySelector<HTMLDivElement>('#dataPanel .cabinValue')
+  personsAwaitingElement!.innerHTML = `<div class="dataRow">Awaiting: ${personsAwaiting.length}</div>`
+  personsInCabinElement!.innerHTML = `<div class="dataRow">In cabin: ${personsInCabin.length}</div>`
 }
 
 const createControlPanel = () => {

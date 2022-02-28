@@ -80,7 +80,7 @@ const initElevatorController = async (config: IElevatorConfig) => {
 
     console.log('Unloading passengers...')
     eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('unloading')
-    await sleep(100 / config.speed)
+    await sleep(1000 / config.speed)
     const personsInCabinBeforeUnloading = storage.personsInCabin
     storage.personsInCabin = storage.personsInCabin.filter((person) => {
       return person.destinationFloor !== elevatorMachine.getCurrentFloor()
@@ -91,6 +91,7 @@ const initElevatorController = async (config: IElevatorConfig) => {
   const loadCabin = async (): Promise<CabinDirection> => {
     console.log('Loading cabin with passengers...')
     eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('loading')
+    await sleep(1000 / config.speed)
     let nextDirection: CabinDirection
 
     // If there is somebody in the cabin, keep going in the same direction
@@ -126,6 +127,8 @@ const initElevatorController = async (config: IElevatorConfig) => {
     await unloadCabin()
 
     const nextDirection = await loadCabin()
+    eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('selectingDirection')
+    await sleep(1000 / config.speed)
 
     if (nextDirection === CabinDirection.Up) {
       eventListeners.onLoggableEvent && eventListeners.onLoggableEvent('moving')
